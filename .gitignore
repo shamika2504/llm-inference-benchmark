@@ -221,3 +221,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# project
+.venv/
+hf_cache/
+*.safetensors
+*.bin
+.env
+results/raw/*trace*.json
