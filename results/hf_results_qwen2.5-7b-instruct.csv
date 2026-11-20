@@ -1,0 +1,10 @@
+model,dtype,batch_size,status,latency_s,ms_per_token,output_tokens_per_s,peak_mem_gb
+Qwen/Qwen2.5-7B-Instruct,float32,1,ok,5.35,41.8,23.9,30.5
+Qwen/Qwen2.5-7B-Instruct,float32,8,ok,6.698,52.33,152.9,30.68
+Qwen/Qwen2.5-7B-Instruct,float32,32,ok,9.629,75.23,425.4,31.64
+Qwen/Qwen2.5-7B-Instruct,float16,1,ok,2.95,23.05,43.4,15.25
+Qwen/Qwen2.5-7B-Instruct,float16,8,ok,3.405,26.6,300.8,15.35
+Qwen/Qwen2.5-7B-Instruct,float16,32,ok,4.389,34.29,933.1,15.83
+Qwen/Qwen2.5-7B-Instruct,bfloat16,1,ok,2.982,23.3,42.9,15.25
+Qwen/Qwen2.5-7B-Instruct,bfloat16,8,ok,3.49,27.27,293.4,15.35
+Qwen/Qwen2.5-7B-Instruct,bfloat16,32,ok,4.41,34.45,928.8,15.83
