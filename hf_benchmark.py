@@ -42,7 +42,7 @@ def generate(model, inputs):
 
 rows = []
 for dtype_name, dtype in DTYPES.items():
-    model = AutoModelForCausalLM.from_pretrained(MODEL, torch_dtype=dtype).to("cuda").eval()
+    model = AutoModelForCausalLM.from_pretrained(MODEL, dtype=dtype).to("cuda").eval()
 
     for batch_size in BATCH_SIZES:
         inputs = make_batch(batch_size)
@@ -85,6 +85,6 @@ baseline = df[(df.dtype == "float32") & (df.batch_size == 1)].iloc[0]
 best = df.loc[df.output_tokens_per_s.idxmax()]
 speedup = best.output_tokens_per_s / baseline.output_tokens_per_s
 print(
-    f"\nBest config: {best.dtype}, batch {best.batch_size} -> {best.output_tokens_per_s} tok/s, "
+    f"\nBest config: {best['dtype']}, batch {best['batch_size']} -> {best.output_tokens_per_s} tok/s, "
     f"{speedup:.1f}x the throughput of float32 batch 1 ({baseline.output_tokens_per_s} tok/s)"
 )
