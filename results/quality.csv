@@ -1,0 +1,4 @@
+backend,num_questions,accuracy,agreement_with_fp32,invalid_answers
+hf-fp32,100,0.5,1.0,0
+hf-fp16,100,0.5,1.0,0
+vllm,100,0.5,1.0,0
