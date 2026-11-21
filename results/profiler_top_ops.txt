@@ -1,0 +1,39 @@
+=== Qwen/Qwen2.5-7B-Instruct float32: top 10 ops by self CUDA time, 10 decode steps at batch 8 ===
+--------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                              Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg     Self CUDA   Self CUDA %    CUDA total  CUDA time avg    # of Calls  
+--------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                          aten::mm         5.43%      21.873ms         9.44%      38.034ms      33.658us     419.156ms        87.37%     419.156ms     370.935us          1130  
+                   ampere_sgemm_64x32_sliced1x4_tn         0.00%       0.000us         0.00%       0.000us       0.000us     263.283ms        54.88%     263.283ms     313.432us           840  
+                  ampere_sgemm_128x32_sliced1x4_tn         0.00%       0.000us         0.00%       0.000us       0.000us     176.851ms        36.86%     176.851ms     310.266us           570  
+                                       aten::addmm         4.57%      18.416ms         8.15%      32.844ms      39.100us      32.521ms         6.78%      32.521ms      38.715us           840  
+                   ampere_sgemm_32x32_sliced1x4_tn         0.00%       0.000us         0.00%       0.000us       0.000us       8.267ms         1.72%       8.267ms      14.763us           560  
+                aten::_efficient_attention_forward         0.94%       3.781ms         5.04%      20.293ms      72.476us       7.505ms         1.56%       8.026ms      28.666us           280  
+fmha_cutlassF_f32_aligned_64x128_rf_sm80(PyTorc...         0.00%       0.000us         0.00%       0.000us       0.000us       7.505ms         1.56%       7.505ms      26.803us           280  
+                                         aten::mul         6.37%      25.671ms        10.58%      42.640ms      16.591us       4.583ms         0.96%       4.583ms       1.783us          2570  
+void at::native::elementwise_kernel<128, 2, at:...         0.00%       0.000us         0.00%       0.000us       0.000us       3.836ms         0.80%       3.836ms       1.690us          2270  
+                                         aten::cat         2.97%      11.957ms         4.89%      19.712ms      17.291us       3.284ms         0.68%       3.284ms       2.880us          1140  
+--------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+Self CPU time total: 403.040ms
+Self CUDA time total: 479.732ms
+
+HF generate, batch 32, 128 tokens, NVML sampled every 50 ms: 192 samples: mean GPU util 98%, mean memory-controller util 89%
+
+=== Qwen/Qwen2.5-7B-Instruct float16: top 10 ops by self CUDA time, 10 decode steps at batch 8 ===
+--------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                              Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg     Self CUDA   Self CUDA %    CUDA total  CUDA time avg    # of Calls  
+--------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+void cutlass::Kernel2<cutlass_80_wmma_tensorop_...         0.00%       0.000us         0.00%       0.000us       0.000us     205.026ms        88.33%     205.026ms     104.074us          1970  
+                                          aten::mm         6.80%      24.987ms         9.12%      33.503ms      29.648us     190.163ms        81.93%     190.163ms     168.285us          1130  
+                                       aten::addmm         5.24%      19.269ms         8.15%      29.962ms      35.669us      15.704ms         6.77%      15.704ms      18.695us           840  
+                                         aten::mul         7.14%      26.228ms        12.31%      45.243ms      17.604us       5.210ms         2.24%       5.210ms       2.027us          2570  
+                                       aten::copy_         3.77%      13.842ms         7.82%      28.749ms      14.418us       4.848ms         2.09%       4.848ms       2.432us          1994  
+void at::native::elementwise_kernel<128, 4, at:...         0.00%       0.000us         0.00%       0.000us       0.000us       3.651ms         1.57%       3.651ms       2.160us          1690  
+                aten::_efficient_attention_forward         1.07%       3.937ms         5.54%      20.350ms      72.678us       3.426ms         1.48%       3.949ms      14.102us           280  
+fmha_cutlassF_f16_aligned_64x128_rf_sm80(PyTorc...         0.00%       0.000us         0.00%       0.000us       0.000us       3.426ms         1.48%       3.426ms      12.237us           280  
+                                         aten::cat         3.28%      12.051ms         5.67%      20.848ms      18.288us       2.930ms         1.26%       2.930ms       2.570us          1140  
+void at::native::elementwise_kernel<128, 4, at:...         0.00%       0.000us         0.00%       0.000us       0.000us       2.820ms         1.21%       2.820ms       3.597us           784  
+--------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+Self CPU time total: 367.479ms
+Self CUDA time total: 232.116ms
+
+HF generate, batch 32, 128 tokens, NVML sampled every 50 ms: 95 samples: mean GPU util 90%, mean memory-controller util 83%

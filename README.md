@@ -23,6 +23,7 @@ pip install -r requirements.txt
 | `hf_benchmark.py` | HF `generate()`: float32 / float16 / bfloat16 × batch 1 / 8 / 32, 128 greedy tokens, 1 warmup + 3 timed runs |
 | `vllm_benchmark.py` | Async streaming client for a vLLM server: concurrency 1 / 8 / 32 / 64, measures TTFT, latency, tokens/sec |
 | `quality_check.py` | 100 PubMedQA questions (yes / no / maybe): accuracy and agreement with fp32 |
+| `profile_decode.py` | `torch.profiler` on 10 decode steps (7B, batch 8, fp32 vs fp16) plus NVML GPU utilization during a batch-32 run |
 | `make_plots.py` | Plots from `results/*.csv` into `results/plots/` |
 
 ```bash
@@ -39,6 +40,7 @@ python quality_check.py --backend hf-fp32
 python quality_check.py --backend hf-fp16
 python quality_check.py --backend vllm                    # needs the default vLLM server running
 
+python profile_decode.py                                  # writes results/profiler_top_ops.txt
 python make_plots.py
 ```
 
@@ -89,6 +91,17 @@ vLLM 0.34 defaults on this GPU: `max-num-seqs` 256, prefix caching on, CUDA grap
 | HF float32 | 50% | — | 0 |
 | HF float16 | 50% | 100% | 0 |
 | vLLM default (float16) | 50% | 100% | 0 |
+
+### Profiling (7B, HF, 10 decode steps at batch 8)
+
+| | float32 | float16 |
+|---|---|---|
+| GPU time per decode step | 48.0 ms | 23.2 ms |
+| Matrix multiplies (`aten::mm` + `aten::addmm`) | 94% of GPU time (`sgemm`, no tensor cores) | 89% (`cutlass` tensor-core kernels) |
+| Attention (`_efficient_attention_forward`) | 1.6% | 1.5% |
+| GPU busy / memory-controller busy (batch-32 generate) | 98% / 89% | 90% / 83% |
+
+Decoding is almost entirely matrix multiplies against the weights. float16 halves their time mainly by halving the bytes read. The GPU-busy number falls to 90% in float16 because the GPU now waits on the CPU to launch the next kernel more often. NVML "utilization" means the share of time any kernel is running, not how many of the GPU's compute units are busy. Full tables: `results/profiler_top_ops.txt`.
 
 ## Key findings
 
